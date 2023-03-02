@@ -53,11 +53,13 @@ function favoritHeandler(req, res) {
     res.send('Welcome to Favorite Page');
 }
 
+
 function defultHandler(req, res) {
     let obj = {
         "status": 404,
         "responseText": "Sorry, page not found"
     }
+
     res.send(obj);
 }
 
