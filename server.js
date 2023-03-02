@@ -29,8 +29,8 @@ server.get('/favorite' ,(req,res)=>{
 
 server.get('*' ,(req,res)=>{
     let obj ={
-        "status": 500,
-        "responseText": "Sorry, something went wrong"
+        "status": 404,
+        "responseText": "Sorry, page not found"
         }
     res.send(obj);
 })
