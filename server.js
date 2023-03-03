@@ -6,37 +6,155 @@ const cors = require('cors');
 
 const server = express();
 
+//const trendingData = require ('./Movie Data/data2.json');
+
+const axios = require('axios');
+
+require('dotenv').config();
+
 server.use(cors());
+//server.use(errorHandler);
 
 const PORT = 3450;
 
-function movieLibarry(title,poster_path,overview){
+//construtors
+function movieLibarry(title, poster_path, overview) {
     this.title = title;
     this.poster_path = poster_path;
     this.overview = overview;
 }
 
+function Trending(id, title, release_date, poster_path, overview) {
+    this.id = id;
+    this.title = title;
+    this.release_date = release_date;
+    this.poster_path = poster_path;
+    this.overview = overview;
+}
 
-server.get('/' ,(req,res)=>{
+//Routes
+server.get('/', homeHandler);
+server.get('/favorite', favoritHeandler);
+//server.get('/trending', trendingHeandler);
+server.get('/trending', newtrendingHeandler);
+server.get('/search', searchHeandler);
+server.get('/topmovies', movieTopRratedHeandler);
+server.get('/discover', discoverMovieHeandler);
+server.get('*', defultHandler);
+
+// Function Handlers
+function homeHandler(req, res) {
     const movieData = require('./Movie Data/data.json');
-    const movies = new movieLibarry(movieData.title,movieData.poster_path,movieData.overview);
-    res.send (movies);
-});
+    const movies = new movieLibarry(movieData.title, movieData.poster_path, movieData.overview);
+    res.send(movies);
+}
 
-server.get('/favorite' ,(req,res)=>{
+function favoritHeandler(req, res) {
     res.send('Welcome to Favorite Page');
-})
+}
 
-server.get('*' ,(req,res)=>{
-    let obj ={
+
+function defultHandler(req, res) {
+    let obj = {
         "status": 404,
         "responseText": "Sorry, page not found"
-        }
+    }
+
     res.send(obj);
-})
+}
+
+// function trendingHeandler(req,res){
+//     let trendingRes = trendingData.results.map((item)=>{
+//         let singleTrend = new Trending(item.id,item.title,item.release_date,item.poster_path,item.overview);
+//         return singleTrend;
+//     })
+//     res.send(trendingRes);
+// }
+
+function newtrendingHeandler(req, res) {
+    try {
+        const apikey = process.env.apikey;
+        const url = `https://api.themoviedb.org/3/trending/movie/day?api_key=${apikey}`;
+        axios.get(url)
+            .then((result) => {
+                let mapResult = result.data.results.map((item) => {
+                    let singleTrend = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                    return singleTrend;
+                })
+                res.send(mapResult);
+            })
+            .catch((error1) => {
+                console.log("sorry,something went wrong");
+                res.status(500).send(error1);
+            })
+    }
+    catch (error) {
+        errorHandler(error,req,res);
+    }
+}
+
+function searchHeandler(req, res) {
+    const apikey = process.env.apikey;
+    const url2 = `https://api.themoviedb.org/3/search/movie?api_key=${apikey}&query="lord%20of%20the%20rings"`;
+    axios.get(url2)
+        .then((result2) => {
+            let mapResult2 = result2.data.results.map((item) => {
+                let singleTrend2 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                return singleTrend2;
+            })
+            res.send(mapResult2);
+        })
+        .catch((error1) => {
+            console.log("sorry,something went wrong");
+            res.status(500).send(error1);
+        })
+
+}
+
+function movieTopRratedHeandler(req, res) {
+    const apikey = process.env.apikey;
+    const url3 = `https://api.themoviedb.org/3/movie/top_rated?api_key=${apikey}`;
+    axios.get(url3)
+        .then((result3) => {
+            let mapResult3 = result3.data.results.map((item) => {
+                let singleTrend3 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                return singleTrend3;
+            })
+            res.send(mapResult3);
+        })
+        .catch((error1) => {
+            console.log("sorry,something went wrong");
+            res.status(500).send(error1);
+        })
+}
+
+function discoverMovieHeandler(req, res) {
+    const apikey = process.env.apikey;
+    const url4 = `https://api.themoviedb.org/3/discover/movie?api_key=${apikey}`;
+    axios.get(url4)
+        .then((result4) => {
+            let mapResult4 = result4.data.results.map((item) => {
+                let singleTrend4 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                return singleTrend4;
+            })
+            res.send(mapResult4);
+        })
+        .catch((error1) => {
+            console.log("sorry,something went wrong");
+            res.status(500).send(error1);
+        })
+}
+
+// function errorHandler (error,req,res){
+//     const err = {
+//         status : 500,
+//         massage: error
+//     };
+//     res.send(err)   
+// }
 
 
 // http://localhost:3450;
-server.listen(PORT, () =>{
+server.listen(PORT, () => {
     console.log(`listening on ${PORT} : Iam ready`);
 });
