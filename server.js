@@ -13,7 +13,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 server.use(cors());
-//server.use(errorHandler);
+server.use(errorHandler);
 
 const PORT = 3450;
 
@@ -87,46 +87,56 @@ function newtrendingHeandler(req, res) {
             })
     }
     catch (error) {
-        errorHandler(error,req,res);
+        errorHandler(error, req, res,next);
     }
 }
 
 function searchHeandler(req, res) {
-    const apikey = process.env.apikey;
-    const url2 = `https://api.themoviedb.org/3/search/movie?api_key=${apikey}&query="lord%20of%20the%20rings"`;
-    axios.get(url2)
-        .then((result2) => {
-            let mapResult2 = result2.data.results.map((item) => {
-                let singleTrend2 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
-                return singleTrend2;
+    try {
+        const apikey = process.env.apikey;
+        const url2 = `https://api.themoviedb.org/3/search/movie?api_key=${apikey}&query="lord%20of%20the%20rings"`;
+        axios.get(url2)
+            .then((result2) => {
+                let mapResult2 = result2.data.results.map((item) => {
+                    let singleTrend2 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                    return singleTrend2;
+                })
+                res.send(mapResult2);
             })
-            res.send(mapResult2);
-        })
-        .catch((error1) => {
-            console.log("sorry,something went wrong");
-            res.status(500).send(error1);
-        })
-
+            .catch((error1) => {
+                console.log("sorry,something went wrong");
+                res.status(500).send(error1);
+            })
+    }
+    catch (error) {
+        errorHandler(error, req, res,next);
+    }
 }
 
 function movieTopRratedHeandler(req, res) {
-    const apikey = process.env.apikey;
-    const url3 = `https://api.themoviedb.org/3/movie/top_rated?api_key=${apikey}`;
-    axios.get(url3)
-        .then((result3) => {
-            let mapResult3 = result3.data.results.map((item) => {
-                let singleTrend3 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
-                return singleTrend3;
+    try {
+        const apikey = process.env.apikey;
+        const url3 = `https://api.themoviedb.org/3/movie/top_rated?api_key=${apikey}`;
+        axios.get(url3)
+            .then((result3) => {
+                let mapResult3 = result3.data.results.map((item) => {
+                    let singleTrend3 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                    return singleTrend3;
+                })
+                res.send(mapResult3);
             })
-            res.send(mapResult3);
-        })
-        .catch((error1) => {
-            console.log("sorry,something went wrong");
-            res.status(500).send(error1);
-        })
+            .catch((error1) => {
+                console.log("sorry,something went wrong");
+                res.status(500).send(error1);
+            })
+    }
+    catch (error) {
+        errorHandler(error, req, res,next);
+    }
 }
 
 function discoverMovieHeandler(req, res) {
+    try{
     const apikey = process.env.apikey;
     const url4 = `https://api.themoviedb.org/3/discover/movie?api_key=${apikey}`;
     axios.get(url4)
@@ -141,15 +151,19 @@ function discoverMovieHeandler(req, res) {
             console.log("sorry,something went wrong");
             res.status(500).send(error1);
         })
+    }
+    catch (error) {
+        errorHandler(error, req, res,next);
+    }
 }
 
-// function errorHandler (error,req,res){
-//     const err = {
-//         status : 500,
-//         massage: error
-//     };
-//     res.send(err)   
-// }
+function errorHandler(error, req, res, next) {
+    const err = {
+        status: 500,
+        massage: error
+    };
+    res.send(err)
+}
 
 
 // http://localhost:3450;
