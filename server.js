@@ -13,7 +13,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 server.use(cors());
-server.use(errorHandler);
+// server.use(errorHandler);
 
 const PORT = 3450;
 
@@ -157,13 +157,13 @@ function discoverMovieHeandler(req, res) {
     }
 }
 
-function errorHandler(error, req, res, next) {
-    const err = {
-        status: 500,
-        massage: error
-    };
-    res.send(err)
-}
+// function errorHandler(error, req, res, next) {
+//     const err = {
+//         status: 500,
+//         massage: error
+//     };
+//     res.send(err)
+// }
 
 
 // http://localhost:3450;
