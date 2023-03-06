@@ -10,12 +10,8 @@ const pg = require('pg');
 
 
 server.use(cors());
-<<<<<<< HEAD
-// server.use(errorHandler);
-=======
 server.use(express.json());
 //server.use(errorHandler);
->>>>>>> a960a25 ( done)
 
 
 const PORT = 3450;
@@ -97,11 +93,7 @@ function newtrendingHeandler(req, res) {
             })
     }
     catch (error) {
-<<<<<<< HEAD
         errorHandler(error, req, res,next);
-=======
-        errorHandler(error, req, res);
->>>>>>> a960a25 ( done)
     }
 }
 
@@ -171,9 +163,6 @@ function discoverMovieHeandler(req, res) {
     }
 }
 
-<<<<<<< HEAD
-// function errorHandler(error, req, res, next) {
-=======
 function getmoviesHandler(req, res) {
     const sql = `SELECT * FROM getmovies`;
     client.query(sql)
@@ -202,7 +191,6 @@ function addmoviesHandler(req, res) {
 }
 
 // function errorHandler (error,req,res){
->>>>>>> a960a25 ( done)
 //     const err = {
 //         status: 500,
 //         massage: error
@@ -217,5 +205,5 @@ client.connect()
         server.listen(PORT, () => {
             console.log(`listening on ${PORT} : Iam ready`);
         });
-    })
+    });
 
