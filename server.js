@@ -1,21 +1,27 @@
 'use strict';
 
 const express = require('express');
-
 const cors = require('cors');
-
 const server = express();
-
 //const trendingData = require ('./Movie Data/data2.json');
-
 const axios = require('axios');
-
 require('dotenv').config();
+const pg = require('pg');
+
 
 server.use(cors());
+<<<<<<< HEAD
 // server.use(errorHandler);
+=======
+server.use(express.json());
+//server.use(errorHandler);
+>>>>>>> a960a25 ( done)
+
 
 const PORT = 3450;
+
+const client = new pg.Client(process.env.DATABASE_URL);
+
 
 //construtors
 function movieLibarry(title, poster_path, overview) {
@@ -40,6 +46,8 @@ server.get('/trending', newtrendingHeandler);
 server.get('/search', searchHeandler);
 server.get('/topmovies', movieTopRratedHeandler);
 server.get('/discover', discoverMovieHeandler);
+server.get('/getmovies', getmoviesHandler)
+server.post('/getmovies', addmoviesHandler)
 server.get('*', defultHandler);
 
 // Function Handlers
@@ -89,7 +97,11 @@ function newtrendingHeandler(req, res) {
             })
     }
     catch (error) {
+<<<<<<< HEAD
         errorHandler(error, req, res,next);
+=======
+        errorHandler(error, req, res);
+>>>>>>> a960a25 ( done)
     }
 }
 
@@ -159,7 +171,38 @@ function discoverMovieHeandler(req, res) {
     }
 }
 
+<<<<<<< HEAD
 // function errorHandler(error, req, res, next) {
+=======
+function getmoviesHandler(req, res) {
+    const sql = `SELECT * FROM getmovies`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((error1) => {
+            //console.log("sorry,something went wrong");
+            res.status(500).send("sorry,something went wrong");
+        })
+}
+
+function addmoviesHandler(req, res) {
+    const movie = req.body;
+    const sql = `INSERT INTO getMovies (title, release_date, poster_path,overview) VALUES ($1,$2,$3,$4) RETURNING *;`
+    const values = [movie.title, movie.release_date, movie.poster_path, movie.overview]
+    
+    client.query(sql,values)
+    .then((data)=>{
+        res.send("your data was added !")
+    })
+    .catch((error1) => {
+        //console.log("sorry,something went wrong");
+        res.status(500).send("sorry,something went wrong");
+    })
+}
+
+// function errorHandler (error,req,res){
+>>>>>>> a960a25 ( done)
 //     const err = {
 //         status: 500,
 //         massage: error
@@ -169,6 +212,10 @@ function discoverMovieHeandler(req, res) {
 
 
 // http://localhost:3450;
-server.listen(PORT, () => {
-    console.log(`listening on ${PORT} : Iam ready`);
-});
+client.connect()
+    .then(() => {
+        server.listen(PORT, () => {
+            console.log(`listening on ${PORT} : Iam ready`);
+        });
+    })
+

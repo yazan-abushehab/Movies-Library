@@ -1,1 +1,2 @@
 apikey=a7d3c5f3a15ecdc56b7c66dabb852fbb
+DATABASE_URL=postgresql://localhost:5432/lab13
