@@ -44,6 +44,8 @@ server.get('/topmovies', movieTopRratedHeandler);
 server.get('/discover', discoverMovieHeandler);
 server.get('/getmovies', getmoviesHandler)
 server.post('/getmovies', addmoviesHandler)
+server.delete('/getmovies/:id', deletemoviesHandler)
+server.put('/getmovies/:id', updatamoviesHandler)
 server.get('*', defultHandler);
 
 // Function Handlers
@@ -93,7 +95,7 @@ function newtrendingHeandler(req, res) {
             })
     }
     catch (error) {
-        errorHandler(error, req, res,next);
+        errorHandler(error, req, res, next);
     }
 }
 
@@ -115,7 +117,7 @@ function searchHeandler(req, res) {
             })
     }
     catch (error) {
-        errorHandler(error, req, res,next);
+        errorHandler(error, req, res, next);
     }
 }
 
@@ -137,29 +139,29 @@ function movieTopRratedHeandler(req, res) {
             })
     }
     catch (error) {
-        errorHandler(error, req, res,next);
+        errorHandler(error, req, res, next);
     }
 }
 
 function discoverMovieHeandler(req, res) {
-    try{
-    const apikey = process.env.apikey;
-    const url4 = `https://api.themoviedb.org/3/discover/movie?api_key=${apikey}`;
-    axios.get(url4)
-        .then((result4) => {
-            let mapResult4 = result4.data.results.map((item) => {
-                let singleTrend4 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
-                return singleTrend4;
+    try {
+        const apikey = process.env.apikey;
+        const url4 = `https://api.themoviedb.org/3/discover/movie?api_key=${apikey}`;
+        axios.get(url4)
+            .then((result4) => {
+                let mapResult4 = result4.data.results.map((item) => {
+                    let singleTrend4 = new Trending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                    return singleTrend4;
+                })
+                res.send(mapResult4);
             })
-            res.send(mapResult4);
-        })
-        .catch((error1) => {
-            console.log("sorry,something went wrong");
-            res.status(500).send(error1);
-        })
+            .catch((error1) => {
+                console.log("sorry,something went wrong");
+                res.status(500).send(error1);
+            })
     }
     catch (error) {
-        errorHandler(error, req, res,next);
+        errorHandler(error, req, res, next);
     }
 }
 
@@ -179,16 +181,47 @@ function addmoviesHandler(req, res) {
     const movie = req.body;
     const sql = `INSERT INTO getMovies (title, release_date, poster_path,overview) VALUES ($1,$2,$3,$4) RETURNING *;`
     const values = [movie.title, movie.release_date, movie.poster_path, movie.overview]
-    
-    client.query(sql,values)
+    client.query(sql, values)
+        .then((data) => {
+            res.send("your data was added !")
+        })
+        .catch((error1) => {
+            //console.log("sorry,something went wrong");
+            res.status(500).send("sorry,something went wrong");
+        })
+}
+
+function deletemoviesHandler(req, res) {
+    //console.log(req.params);
+    const id = req.params.id;
+    const sql = `DELETE FROM getmovies WHERE id=${id}`;
+    client.query(sql)
+        .then((data) => {
+            res.status(204).json({});
+        })
+        .catch((error1) => {
+            //console.log("sorry,something went wrong");
+            res.status(500).send("sorry,something went wrong");
+        })
+}
+
+function updatamoviesHandler(req, res) {
+    //const id = req.params.id;
+    //console.log(id);
+    //console.log(req.body);
+    const sql = `UPDATA getmovies SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id=${id} RETURNING *`;
+    const values = [req.body.title,req.body.release_date,req.body.poster_path,req.body.overview];
+    client.query(sql, values)
     .then((data)=>{
-        res.send("your data was added !")
+        res.status(200).send(data.rows);
     })
     .catch((error1) => {
         //console.log("sorry,something went wrong");
         res.status(500).send("sorry,something went wrong");
     })
+
 }
+
 
 // function errorHandler (error,req,res){
 //     const err = {
