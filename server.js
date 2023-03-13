@@ -14,7 +14,7 @@ server.use(express.json());
 //server.use(errorHandler);
 
 
-const PORT = 3450;
+const PORT = process.env.PORT || 3450;
 
 const client = new pg.Client(process.env.DATABASE_URL);
 
