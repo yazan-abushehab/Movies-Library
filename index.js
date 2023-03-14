@@ -42,7 +42,7 @@ server.get('/trending', newtrendingHeandler);
 server.get('/search', searchHeandler);
 server.get('/topmovies', movieTopRratedHeandler);
 server.get('/discover', discoverMovieHeandler);
-server.get('/getmovies', getmoviesHandler)
+server.get('/getmovies/:id', getmoviesHandler)
 server.post('/getmovies', addmoviesHandler)
 server.delete('/getmovies/:id', deletemoviesHandler)
 server.put('/getmovies/:id', updatamoviesHandler)
@@ -166,7 +166,8 @@ function discoverMovieHeandler(req, res) {
 }
 
 function getmoviesHandler(req, res) {
-    const sql = `SELECT * FROM getmovies`;
+    const id = req.params.id;
+    const sql = `SELECT * FROM getmovies WHERE id=${id}`;
     client.query(sql)
         .then((data) => {
             res.send(data.rows);
@@ -206,20 +207,20 @@ function deletemoviesHandler(req, res) {
 }
 
 function updatamoviesHandler(req, res) {
-    //const id = req.params.id;
+    const id = req.params.id;
     //console.log(id);
-    //console.log(req.body);
-    const sql = `UPDATA getmovies SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id=${id} RETURNING *`;
+    console.log(req.body);
+    const sql = `UPDATE getmovies SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id=${id} RETURNING *`;
     const values = [req.body.title,req.body.release_date,req.body.poster_path,req.body.overview];
-    client.query(sql, values)
+    client.query(sql,values)
     .then((data)=>{
+       // console.log(data)
         res.status(200).send(data.rows);
     })
     .catch((error1) => {
         //console.log("sorry,something went wrong");
         res.status(500).send("sorry,something went wrong");
     })
-
 }
 
 
