@@ -42,10 +42,11 @@ server.get('/trending', newtrendingHeandler);
 server.get('/search', searchHeandler);
 server.get('/topmovies', movieTopRratedHeandler);
 server.get('/discover', discoverMovieHeandler);
-server.get('/getmovies/:id', getmoviesHandler)
+server.get('/getmovies', getAllmoviesHandler)
 server.post('/getmovies', addmoviesHandler)
 server.delete('/getmovies/:id', deletemoviesHandler)
 server.put('/getmovies/:id', updatamoviesHandler)
+server.get('/getmovies/:id', getmoviesHandler)
 server.get('*', defultHandler);
 
 // Function Handlers
@@ -79,6 +80,7 @@ function defultHandler(req, res) {
 
 function newtrendingHeandler(req, res) {
     try {
+        console.log("your data was send !");
         const apikey = process.env.apikey;
         const url = `https://api.themoviedb.org/3/trending/movie/day?api_key=${apikey}`;
         axios.get(url)
@@ -165,9 +167,8 @@ function discoverMovieHeandler(req, res) {
     }
 }
 
-function getmoviesHandler(req, res) {
-    const id = req.params.id;
-    const sql = `SELECT * FROM getmovies WHERE id=${id}`;
+function getAllmoviesHandler(req, res) {
+    const sql = `SELECT * FROM getmovies`;
     client.query(sql)
         .then((data) => {
             res.send(data.rows);
@@ -221,6 +222,19 @@ function updatamoviesHandler(req, res) {
         //console.log("sorry,something went wrong");
         res.status(500).send("sorry,something went wrong");
     })
+}
+
+function getmoviesHandler(req, res) {
+    const id = req.params.id;
+    const sql = `SELECT * FROM getmovies WHERE id=${id}`;
+    client.query(sql)
+        .then((data) => {
+            res.send(data.rows);
+        })
+        .catch((error1) => {
+            //console.log("sorry,something went wrong");
+            res.status(500).send("sorry,something went wrong");
+        })
 }
 
 
